@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
+import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { products } from '../db/products';
 import ItemList from './ItemList';
 import Loader from './Loader';
 
@@ -12,34 +12,26 @@ const ItemListContainer = () => {
 	const { categoryId } = useParams();
 
 	useEffect(() => {
-		const fetchProducts = () => {
-			return new Promise((resolve) => {
-				setTimeout(() => {
-					resolve(products);
-				}, 2000);
-			});
-		};
-
 		setLoading(true);
+		const db = getFirestore();
+		const itemsCollection = collection(db, 'items');
+		let q;
 
-		fetchProducts().then(products => {
+		if (categoryId) {
+			q = query(itemsCollection, where('categoryId', '==', categoryId));
+		} else {
+			q = itemsCollection;
+		}
 
-			if (categoryId) {
-				setItems(products.filter(p => p.category === categoryId));
-			} else {
-				setItems(products);
-			}
+		getDocs(q).then((snapshot) => {
+			const fetchedItems = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+			setItems(fetchedItems);
 			setLoading(false);
 		});
 	}, [categoryId]);
 
-	const containerStyles = {
-		background: 'linear-gradient(to bottom left, #C9A0DC, #AEC6CF)',
-		color: '#2D3748',
-	};
-
 	return (
-		<div className="flex flex-col items-center justify-center flex-grow p-4 text-center" style={containerStyles}>
+		<div className="flex flex-col items-center justify-center flex-grow p-4 text-center">
 			{loading ? (
 				<Loader />
 			) : (
