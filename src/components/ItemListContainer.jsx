@@ -28,6 +28,7 @@ const ItemListContainer = () => {
 			setItems(fetchedItems);
 			setLoading(false);
 		});
+		// seedFirestore();
 	}, [categoryId]);
 
 	return (
@@ -35,10 +36,10 @@ const ItemListContainer = () => {
 			{loading ? (
 				<Loader />
 			) : (
-				<>
+				<div className='container mx-auto'>
 					<h2 className="mb-4 text-3xl font-black text-center text-white">Catálogo{categoryId ? ` - ${categoryId}` : ''}</h2>
 					<ItemList items={items} />
-				</>
+				</div>
 			)}
 		</div>
 	);

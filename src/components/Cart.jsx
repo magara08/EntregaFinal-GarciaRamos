@@ -1,3 +1,4 @@
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { addDoc, collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -52,7 +53,7 @@ const Cart = () => {
 			<div className="flex flex-col items-center justify-center flex-grow p-4 text-center">
 				<h2 className="mb-4 text-3xl font-black text-center text-white">Orden Completa</h2>
 				<p className="text-lg text-gray-700">Gracias por tu compra. Tu número de orden es: <strong>{orderId}</strong></p>
-				<Link to="/" className="px-4 py-2 mt-4 text-white bg-blue-600 rounded">
+				<Link to="/" className="px-4 py-2 mt-4 text-lg font-bold text-white uppercase transition-colors duration-300 ease-in-out rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet">
 					Volver a la tienda
 				</Link>
 			</div>
@@ -62,9 +63,8 @@ const Cart = () => {
 	if (cart.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center flex-grow p-4 text-center">
-				<h2 className="mb-4 text-3xl font-black text-center text-white">Carrito</h2>
 				<p className="text-lg text-gray-700">Tu carrito está vacío por ahora.</p>
-				<Link to="/" className="px-4 py-2 mt-4 text-white bg-blue-600 rounded">
+				<Link to="/" className="px-4 py-2 mt-4 text-white rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet">
 					Volver a la tienda
 				</Link>
 			</div>
@@ -73,38 +73,43 @@ const Cart = () => {
 
 	return (
 		<div className="flex flex-col items-center justify-center flex-grow p-4 text-center">
-			<h2 className="mb-4 text-3xl font-black text-center text-white">Carrito</h2>
-			<ul className="w-full max-w-md space-y-4">
-				{cart.map(item => (
-					<li key={item.id} className="flex items-center justify-between p-4 bg-white rounded shadow-lg">
-						<div className="flex items-center space-x-4">
-							<img src={item.pictureUrl} alt={item.title} className="w-16 h-16 rounded" />
-							<div>
-								<h3 className="text-lg font-semibold">{item.title}</h3>
-								<p className="text-sm text-gray-600">Cantidad: {item.quantity}</p>
-								<p className="text-sm text-gray-600">Precio: {formatCurrency(item.price)}</p>
-							</div>
-						</div>
-						<button
-							onClick={() => removeItem(item.id)}
-							className="px-4 py-2 text-white bg-red-600 rounded"
-						>
-							Eliminar
-						</button>
-					</li>
-				))}
-			</ul>
-			<div className="mt-4 text-lg font-bold text-gray-900">
-				Total: {formatCurrency(totalPrice)}
+			<h2 className="mb-4 text-3xl font-black text-center text-white">Terminar tu Compra</h2>
+			<div className="container grid grid-cols-1 gap-6 mx-auto md:grid-cols-2">
+				<div>
+					<CheckoutForm onSubmit={handleOrder} loading={loading} />
+				</div>
+				<div>
+					<ul className="space-y-4">
+						{cart.map(item => (
+							<li key={item.id} className="flex items-center justify-between p-4 bg-white rounded shadow-lg">
+								<div className="flex items-center space-x-4 text-left">
+									<img src={item.thumbnail} alt={item.title} className="w-16 h-16 rounded" />
+									<div>
+										<h3 className="text-lg font-semibold text-pastelViolet">{item.title}</h3>
+										<p className="text-sm text-gray-600">Cantidad: {item.quantity}</p>
+										<p className="text-sm text-gray-600">Precio: <span className='text-bold'>{formatCurrency(item.price)}</span></p>
+									</div>
+								</div>
+								<button
+									onClick={() => removeItem(item.id)}
+									className="cursor-pointer text-pastelViolet hover:text-pastelPink"
+								>
+									<TrashIcon className="w-6 h-6" />
+								</button>
+							</li>
+						))}
+					</ul>
+					<div className="mt-4 text-lg font-bold text-gray-900">
+						Total: {formatCurrency(totalPrice)}
+					</div>
+					<button
+						onClick={clear}
+						className="px-4 py-2 mt-4 text-white transition-colors duration-300 ease-in-out bg-gray-600 rounded cursor-pointer hover:bg-gray-800"
+					>
+						Vaciar Carrito
+					</button>
+				</div>
 			</div>
-			<button
-				onClick={clear}
-				className="px-4 py-2 mt-4 text-white bg-gray-600 rounded"
-			>
-				Vaciar Carrito
-			</button>
-
-			<CheckoutForm onSubmit={handleOrder} loading={loading} />
 		</div>
 	);
 };

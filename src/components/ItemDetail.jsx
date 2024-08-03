@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../utils';
 import ItemCount from './ItemCount';
@@ -14,7 +14,7 @@ const ItemDetail = ({ product }) => {
 	const handleAdd = (quantity) => {
 		setQuantityAdded(quantity);
 		addItem(product, quantity);
-		console.log(`Agregado ${quantity} ítems de ${title} al carrito`);
+		// console.log(`Agregado ${quantity} ítems de ${title} al carrito`);
 	};
 
 	const handleCheckout = () => {
@@ -32,21 +32,29 @@ const ItemDetail = ({ product }) => {
 			</div>
 			<div className="flex-1">
 				<h2 className="mb-2 text-3xl font-bold text-pastelViolet">{title}</h2>
-				<p className="mb-4 text-left text-gray-700">Género: {genre.join(', ')}</p>
-				<p className="mb-4 text-3xl font-semibold text-gray-900">{formatCurrency(price)}</p>
-				<h3 className="mb-2 text-xl font-bold text-pastelViolet">Lista de Canciones</h3>
-				<ul className="mb-4 text-left text-gray-700">
+				<p className="mb-4 text-3xl font-semibold text-gray-900">✨{formatCurrency(price)}✨</p>
+				<h3 className="mb-2 text-xl font-bold text-left text-pastelViolet">Lista de Canciones</h3>
+				<ul className="px-4 mb-4 text-left text-gray-700">
 					{tracklist.map((track, index) => (
-						<li key={index}>{track}</li>
+						<li key={index} className='italic'>{`${index + 1}) "${track}"`}</li>
+					))}
+				</ul>
+				<h3 className="mb-2 text-xl font-bold text-left text-pastelViolet">Géneros</h3>
+				<ul className="flex flex-wrap gap-2 px-4 mb-4 text-left text-gray-700">
+					{genre.map((genre, index) => (
+						<li key={index} className='inline-flex px-4 py-1 text-xs font-bold text-white rounded shadow-sm bg-pastelViolet w-fit'>{genre}</li>
 					))}
 				</ul>
 				{quantityAdded > 0 ? (
-					<button
-						onClick={handleCheckout}
-						className="px-4 py-2 text-white bg-blue-600 rounded"
-					>
-						Terminar mi compra
-					</button>
+					<>
+						<Link to="/" className='block w-full px-4 py-1 text-lg font-bold text-white uppercase rounded cursor-pointer bg-pastelBlue'>Seguir comprando</Link>
+						<button
+							onClick={handleCheckout}
+							className="w-full px-4 py-1 mt-2 text-lg font-bold text-white uppercase rounded cursor-pointer bg-pastelGreen"
+						>
+							Terminar mi compra
+						</button>
+					</>
 				) : (
 					<ItemCount stock={stock} initial={1} onAdd={handleAdd} />
 				)}

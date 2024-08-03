@@ -7,7 +7,12 @@ const CheckoutForm = ({ onSubmit, loading }) => {
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
-		setBuyer({ ...buyer, [name]: value });
+		if (name === 'phone') {
+			const phoneValue = value.replace(/[^0-9]/g, ''); // Permitir solo números
+			setBuyer({ ...buyer, [name]: phoneValue });
+		} else {
+			setBuyer({ ...buyer, [name]: value });
+		}
 		validateField(name, value);
 	};
 
@@ -16,8 +21,12 @@ const CheckoutForm = ({ onSubmit, loading }) => {
 
 		if (name === 'name' && !value.trim()) {
 			errorMsg = 'Nombre es requerido';
-		} else if (name === 'phone' && !value.trim()) {
-			errorMsg = 'Teléfono es requerido';
+		} else if (name === 'phone') {
+			if (!value.trim()) {
+				errorMsg = 'Teléfono es requerido';
+			} else if (!/^\d+$/.test(value)) {
+				errorMsg = 'Teléfono no es válido';
+			}
 		} else if (name === 'email') {
 			if (!value.trim()) {
 				errorMsg = 'Email es requerido';
@@ -33,7 +42,11 @@ const CheckoutForm = ({ onSubmit, loading }) => {
 		const newErrors = {};
 
 		if (!buyer.name.trim()) newErrors.name = 'Nombre es requerido';
-		if (!buyer.phone.trim()) newErrors.phone = 'Teléfono es requerido';
+		if (!buyer.phone.trim()) {
+			newErrors.phone = 'Teléfono es requerido';
+		} else if (!/^\d+$/.test(buyer.phone)) {
+			newErrors.phone = 'Teléfono no es válido';
+		}
 		if (!buyer.email.trim()) {
 			newErrors.email = 'Email es requerido';
 		} else if (!/\S+@\S+\.\S+/.test(buyer.email)) {
@@ -52,43 +65,46 @@ const CheckoutForm = ({ onSubmit, loading }) => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="w-full max-w-md mt-6 space-y-4">
+		<form onSubmit={handleSubmit} className="w-full p-4 space-y-4 bg-white rounded shadow-md">
 			<div>
-				<label className="block text-sm font-medium text-gray-700">Nombre</label>
+				<label className="block text-sm font-medium text-left text-gray-700">Nombre:</label>
 				<input
 					type="text"
 					name="name"
 					value={buyer.name}
 					onChange={handleInputChange}
-					className="w-full px-3 py-2 mt-1 border rounded"
+					className="w-full px-3 py-2 mt-1 border rounded focus:outline-none focus:ring-2 focus:ring-pastelBlue"
+					placeholder='Ingresá tu nombre completo'
 				/>
-				{errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+				{errors.name && <p className="text-sm text-left text-red-500">{errors.name}</p>}
 			</div>
 			<div>
-				<label className="block text-sm font-medium text-gray-700">Teléfono</label>
+				<label className="block text-sm font-medium text-left text-gray-700">Teléfono:</label>
 				<input
 					type="tel"
 					name="phone"
 					value={buyer.phone}
 					onChange={handleInputChange}
-					className="w-full px-3 py-2 mt-1 border rounded"
+					className="w-full px-3 py-2 mt-1 border rounded focus:outline-none focus:ring-2 focus:ring-pastelBlue"
+					placeholder='Ingresá tu número de teléfono (solo números)'
 				/>
-				{errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+				{errors.phone && <p className="text-sm text-left text-red-500">{errors.phone}</p>}
 			</div>
 			<div>
-				<label className="block text-sm font-medium text-gray-700">Email</label>
+				<label className="block text-sm font-medium text-left text-gray-700">Email:</label>
 				<input
 					type="email"
 					name="email"
 					value={buyer.email}
 					onChange={handleInputChange}
-					className="w-full px-3 py-2 mt-1 border rounded"
+					className="w-full px-3 py-2 mt-1 border rounded focus:outline-none focus:ring-2 focus:ring-pastelBlue"
+					placeholder='Ingresá tu email'
 				/>
-				{errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+				{errors.email && <p className="text-sm text-left text-red-500">{errors.email}</p>}
 			</div>
 			<button
 				type="submit"
-				className="w-full px-4 py-2 text-white bg-green-600 rounded"
+				className="w-full px-4 py-2 text-lg font-semibold text-white uppercase transition-colors duration-300 ease-in-out rounded shadow-md cursor-pointer bg-pastelGreen hover:bg-pastelViolet"
 				disabled={loading}
 			>
 				{loading ? 'Procesando...' : 'Finalizar Compra'}

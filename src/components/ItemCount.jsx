@@ -53,7 +53,7 @@ const ItemCount = ({ stock, initial, onAdd }) => {
 			>
 				Agregar al Carrito
 			</button>
-			<span className="text-sm text-slate-900">Stock: {availableStock}</span>
+			<span className="text-sm italic text-slate-600">(Stock: {availableStock})</span>
 		</div>
 	);
 };
