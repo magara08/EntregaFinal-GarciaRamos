@@ -3,7 +3,7 @@ import CartWidget from './CartWidget';
 
 const NavBar = () => {
 	return (
-		<nav className="shadow-lg bg-pastelViolet bg-opacity-80 backdrop-blur-md backdrop-filter">
+		<nav className="sticky top-0 shadow-lg bg-pastelViolet bg-opacity-80 backdrop-blur-md backdrop-filter">
 			<div className="container flex flex-col items-center justify-between p-4 mx-auto md:flex-row">
 				<div className="flex items-center justify-between w-full md:w-auto">
 					<h1 className="text-2xl italic font-black text-center text-white uppercase sm:text-3xl">
