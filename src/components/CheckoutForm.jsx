@@ -104,7 +104,7 @@ const CheckoutForm = ({ onSubmit, loading }) => {
 			</div>
 			<button
 				type="submit"
-				className="w-full px-4 py-2 text-lg font-semibold text-white uppercase transition-colors duration-300 ease-in-out rounded shadow-md cursor-pointer bg-pastelGreen hover:bg-pastelViolet"
+				className="w-full px-4 py-2 text-lg font-semibold text-white uppercase transition-colors duration-300 ease-out rounded shadow-md cursor-pointer bg-pastelGreen hover:bg-pastelViolet hover:text-pastelYellow"
 				disabled={loading}
 			>
 				{loading ? 'Procesando...' : 'Finalizar Compra'}

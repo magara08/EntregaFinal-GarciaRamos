@@ -14,7 +14,6 @@ const ItemDetail = ({ product }) => {
 	const handleAdd = (quantity) => {
 		setQuantityAdded(quantity);
 		addItem(product, quantity);
-		// console.log(`Agregado ${quantity} ítems de ${title} al carrito`);
 	};
 
 	const handleCheckout = () => {
@@ -22,42 +21,48 @@ const ItemDetail = ({ product }) => {
 	};
 
 	return (
-		<div className="flex max-w-4xl p-6 mx-auto space-x-6 bg-white rounded-lg shadow-lg">
-			<div className="relative w-[300px] h-[300px] bg-white border-2 border-gray-300 rounded-lg shadow-lg overflow-hidden">
-				<img
-					src={images.cover}
-					alt={title}
-					className="object-cover w-full h-full"
-				/>
-			</div>
-			<div className="flex-1">
-				<h2 className="mb-2 text-3xl font-bold text-pastelViolet">{title}</h2>
-				<p className="mb-4 text-3xl font-semibold text-gray-900">✨{formatCurrency(price)}✨</p>
-				<h3 className="mb-2 text-xl font-bold text-left text-pastelViolet">Lista de Canciones</h3>
-				<ul className="px-4 mb-4 text-left text-gray-700">
-					{tracklist.map((track, index) => (
-						<li key={index} className='italic'>{`${index + 1}) "${track}"`}</li>
-					))}
-				</ul>
-				<h3 className="mb-2 text-xl font-bold text-left text-pastelViolet">Géneros</h3>
-				<ul className="flex flex-wrap gap-2 px-4 mb-4 text-left text-gray-700">
-					{genre.map((genre, index) => (
-						<li key={index} className='inline-flex px-4 py-1 text-xs font-bold text-white rounded shadow-sm bg-pastelViolet w-fit'>{genre}</li>
-					))}
-				</ul>
-				{quantityAdded > 0 ? (
-					<>
-						<Link to="/" className='block w-full px-4 py-1 text-lg font-bold text-white uppercase rounded cursor-pointer bg-pastelBlue'>Seguir comprando</Link>
-						<button
-							onClick={handleCheckout}
-							className="w-full px-4 py-1 mt-2 text-lg font-bold text-white uppercase rounded cursor-pointer bg-pastelGreen"
-						>
-							Terminar mi compra
-						</button>
-					</>
-				) : (
-					<ItemCount stock={stock} initial={1} onAdd={handleAdd} />
-				)}
+		<div className="container w-full p-4 mx-auto md:max-w-4xl">
+			<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg md:flex-row md:items-start md:space-x-6">
+				<div className="w-full md:w-1/3">
+					<img
+						src={images.cover}
+						alt={title}
+						className="object-cover w-full h-full border-2 rounded-lg shadow-md border-slate-200"
+					/>
+				</div>
+				<div className="flex flex-col items-center justify-center flex-1 w-full text-center md:p-4 md:pr-0 md:text-left md:justify-start md:items-start">
+					<h2 className="mb-2 text-2xl font-bold text-pastelViolet sm:text-3xl">{title}</h2>
+					<p className="mb-4 text-xl font-semibold text-gray-900 sm:text-2xl md:mx-auto">✨{formatCurrency(price)}✨</p>
+					<h3 className="mb-2 text-xl font-bold text-pastelViolet">Lista de Canciones</h3>
+					<ul className="mb-4 text-gray-700">
+						{tracklist.map((track, index) => (
+							<li key={index} className="italic">{`${index + 1}) "${track}"`}</li>
+						))}
+					</ul>
+					<h3 className="mb-2 text-xl font-bold text-pastelViolet">Géneros</h3>
+					<ul className="flex flex-wrap justify-center gap-2 mb-4 text-gray-700 md:justify-start">
+						{genre.map((genre, index) => (
+							<li key={index} className="inline-flex px-4 py-1 text-xs font-bold text-white rounded shadow-sm bg-pastelViolet">
+								{genre}
+							</li>
+						))}
+					</ul>
+					{quantityAdded > 0 ? (
+						<div className="w-full">
+							<Link to="/" className="block w-full px-4 py-1 mb-2 text-lg font-bold text-center text-white uppercase transition-colors duration-300 ease-in-out rounded cursor-pointer bg-pastelBlue hover:bg-pastelViolet hover:text-pastelYellow">
+								Seguir comprando
+							</Link>
+							<button
+								onClick={handleCheckout}
+								className="w-full px-4 py-1 text-lg font-bold text-white uppercase transition-colors duration-300 ease-in-out rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet hover:text-pastelYellow"
+							>
+								Terminar mi compra
+							</button>
+						</div>
+					) : (
+						<ItemCount stock={stock} initial={1} onAdd={handleAdd} />
+					)}
+				</div>
 			</div>
 		</div>
 	);

@@ -24,11 +24,10 @@ const ItemListContainer = () => {
 		}
 
 		getDocs(q).then((snapshot) => {
-			const fetchedItems = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+			const fetchedItems = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })).filter(item => item.stock > 0);
 			setItems(fetchedItems);
 			setLoading(false);
 		});
-		// seedFirestore();
 	}, [categoryId]);
 
 	return (
@@ -39,6 +38,9 @@ const ItemListContainer = () => {
 				<div className='container mx-auto'>
 					<h2 className="mb-4 text-3xl font-black text-center text-white">Catálogo{categoryId ? ` - ${categoryId}` : ''}</h2>
 					<ItemList items={items} />
+					{items.length === 0 && (
+						<p className="text-xl text-center text-gray-700">Actualmente no tenemos nada para ofrecer, pero estamos trabajando en ello 👷🏻‍♂️🚧</p>
+					)}
 				</div>
 			)}
 		</div>

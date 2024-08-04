@@ -1,17 +1,19 @@
-import { TrashIcon } from '@heroicons/react/24/outline';
 import { addDoc, collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../hooks/useCart';
 import { formatCurrency } from '../utils';
+import CartItem from './CartItem';
 import CheckoutForm from './CheckoutForm';
+import ConfirmModal from './ConfirmModal';
 
 const Cart = () => {
-	const { cart, removeItem, clear } = useCart();
+	const { cart, removeItem, clear, totalPrice } = useCart();
 	const [orderId, setOrderId] = useState(null);
 	const [loading, setLoading] = useState(false);
-
-	const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalAction, setModalAction] = useState(null);
+	const [itemToRemove, setItemToRemove] = useState(null);
 
 	const handleOrder = async (buyer) => {
 		setLoading(true);
@@ -48,14 +50,40 @@ const Cart = () => {
 		}
 	};
 
+	const openModal = (action, item = null) => {
+		setModalAction(action);
+		setItemToRemove(item);
+		setIsModalOpen(true);
+	};
+
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
+
+	const handleConfirm = () => {
+		if (modalAction === 'clear') {
+			clear();
+		} else if (modalAction === 'remove' && itemToRemove) {
+			removeItem(itemToRemove.id);
+		}
+		closeModal();
+	};
+
 	if (orderId) {
 		return (
-			<div className="flex flex-col items-center justify-center flex-grow p-4 text-center">
-				<h2 className="mb-4 text-3xl font-black text-center text-white">Orden Completa</h2>
-				<p className="text-lg text-gray-700">Gracias por tu compra. Tu número de orden es: <strong>{orderId}</strong></p>
-				<Link to="/" className="px-4 py-2 mt-4 text-lg font-bold text-white uppercase transition-colors duration-300 ease-in-out rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet">
-					Volver a la tienda
-				</Link>
+			<div className="flex items-center justify-center flex-grow p-4">
+				<div className="w-full max-w-2xl p-6 mx-auto space-y-4 text-center bg-white rounded-lg shadow-lg">
+					<h2 className="text-3xl font-black text-center text-pastelViolet">Orden Completada</h2>
+					<p className="text-lg text-gray-700">
+						Gracias por tu compra. Tu número de orden es: <strong>{orderId}</strong>
+					</p>
+					<Link
+						to="/"
+						className="inline-block px-4 py-2 font-semibold text-white uppercase transition-all duration-300 ease-in-out rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet hover:text-pastelYellow"
+					>
+						Volver a la tienda
+					</Link>
+				</div>
 			</div>
 		);
 	}
@@ -63,8 +91,9 @@ const Cart = () => {
 	if (cart.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center flex-grow p-4 text-center">
-				<p className="text-lg text-gray-700">Tu carrito está vacío por ahora.</p>
-				<Link to="/" className="px-4 py-2 mt-4 text-white rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet">
+				<h2 className="mb-4 text-3xl font-black text-center text-white">Carrito</h2>
+				<p className="text-lg text-gray-700">Tu carrito está vacío, por ahora... 😉</p>
+				<Link to="/" className="px-4 py-2 mt-4 font-semibold text-white uppercase transition-all duration-300 ease-in-out rounded cursor-pointer bg-pastelGreen hover:bg-pastelViolet hover:text-pastelYellow">
 					Volver a la tienda
 				</Link>
 			</div>
@@ -81,35 +110,26 @@ const Cart = () => {
 				<div>
 					<ul className="space-y-4">
 						{cart.map(item => (
-							<li key={item.id} className="flex items-center justify-between p-4 bg-white rounded shadow-lg">
-								<div className="flex items-center space-x-4 text-left">
-									<img src={item.thumbnail} alt={item.title} className="w-16 h-16 rounded" />
-									<div>
-										<h3 className="text-lg font-semibold text-pastelViolet">{item.title}</h3>
-										<p className="text-sm text-gray-600">Cantidad: {item.quantity}</p>
-										<p className="text-sm text-gray-600">Precio: <span className='text-bold'>{formatCurrency(item.price)}</span></p>
-									</div>
-								</div>
-								<button
-									onClick={() => removeItem(item.id)}
-									className="cursor-pointer text-pastelViolet hover:text-pastelPink"
-								>
-									<TrashIcon className="w-6 h-6" />
-								</button>
-							</li>
+							<CartItem key={item.id} item={item} openModal={openModal} />
 						))}
 					</ul>
 					<div className="mt-4 text-lg font-bold text-gray-900">
 						Total: {formatCurrency(totalPrice)}
 					</div>
 					<button
-						onClick={clear}
-						className="px-4 py-2 mt-4 text-white transition-colors duration-300 ease-in-out bg-gray-600 rounded cursor-pointer hover:bg-gray-800"
+						onClick={() => openModal('clear')}
+						className="px-4 py-2 mt-4 font-semibold text-white uppercase transition-all duration-300 ease-in-out rounded cursor-pointer bg-pastelBlue hover:bg-pastelYellow hover:text-pastelViolet"
 					>
 						Vaciar Carrito
 					</button>
 				</div>
 			</div>
+			<ConfirmModal
+				isOpen={isModalOpen}
+				onRequestClose={closeModal}
+				onConfirm={handleConfirm}
+				message={modalAction === 'clear' ? '¿Estás seguro de que quieres vaciar el carrito?' : '¿Estás seguro de que quieres eliminar este producto?'}
+			/>
 		</div>
 	);
 };
